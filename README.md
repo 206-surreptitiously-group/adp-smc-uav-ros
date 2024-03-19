@@ -18,7 +18,8 @@ How to run this script.
 
    3.1 Open another folder and source this ROS package.
 
-   3.2. Run **rosrun fntsmc-ppo-ros control_ros.py**
+   3.2. Run **rosrun fntsmc-ppo-ros control_ros2.py** 
+   `rosrun fntsmc-ppo-ros control_ros.py also works, but it is the old version` 
 
 4. (Optional) Polt curve
 
