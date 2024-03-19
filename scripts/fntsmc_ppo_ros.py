@@ -29,6 +29,7 @@ class fntsmc_ppo_ros:
 		self.global_flag = 0  # UAV working mode monitoring
 		self.DT = pos_ctrl_param.dt
 		self.use_gazebo = True
+		self.pkg_name = 'fntsmc-ppo-ros'
 
 		''' 选择不同的控制器 '''
 		self.controller = 'FNTSMC'
@@ -250,6 +251,16 @@ class fntsmc_ppo_ros:
 		else:
 			self.obs = None
 
+	def observe(self, uav_ros: UAV_ROS):
+		if self.observer == 'neso':
+			syst_dynamic = -uav_ros.kt / uav_ros.m * uav_ros.dot_eta() + uav_ros.A()
+			res, _ = self.obs.observe(x=uav_ros.eta(), syst_dynamic=syst_dynamic)
+		elif self.observer == 'rd3':
+			syst_dynamic = -uav_ros.kt / uav_ros.m * uav_ros.dot_eta() + uav_ros.A()
+			res, _ = self.obs.observe(e=uav_ros.eta(), syst_dynamic=syst_dynamic)
+		else:
+			res = np.zeros(3)
+		return res
 	def publish_control_cmd(self, phi_d: float, theta_d: float, psi_d: float, uf: float):
 		self.ctrl_cmd.header.stamp = rospy.Time.now()
 		self.ctrl_cmd.type_mask = AttitudeTarget.IGNORE_ROLL_RATE + AttitudeTarget.IGNORE_PITCH_RATE + AttitudeTarget.IGNORE_YAW_RATE

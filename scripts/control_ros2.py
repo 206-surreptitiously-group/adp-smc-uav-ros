@@ -62,9 +62,9 @@ if __name__ == "__main__":
 
 	'''load actor'''
 	opt_pos = PPOActor_Gaussian(state_dim=6, action_dim=8)
-	# optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/pos_new1-260/'  # 仿真最好的，实际最差的
-	optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/opt1/'  # 最好的
-	# optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/opt2/'      # 第二好的
+	# optPathPos = os.getcwd() + '/src/' + agent.pkg_name + '/nets/pos_new1-260/'  # 仿真最好的，实际最差的
+	optPathPos = os.getcwd() + '/src/' + agent.pkg_name + '/nets/opt1/'  # 最好的
+	# optPathPos = os.getcwd() + '/src/' + agent.pkg_name + '/nets/opt2/'      # 第二好的
 	opt_pos.load_state_dict(torch.load(optPathPos + 'actor'))
 	pos_norm = agent.get_normalizer_from_file(6, optPathPos, 'state_norm.csv')
 	'''load actor'''
@@ -79,6 +79,7 @@ if __name__ == "__main__":
 			if agent.approaching(np.zeros(4), ref_period, ref_bias_a, ref_bias_phase):
 				agent.global_flag = 2
 		elif agent.global_flag == 2:	# preparing
+			agent.ros_sleep_sec(2)		# wait for 2 seconds
 			print('Final preparing for control.')
 			uav_ros = UAV_ROS(m=0.722, g=9.8, kt=1e-3, dt=agent.DT, time_max=30)  # 0.722
 			fntsmc_ctrl = fntsmc_pos(pos_ctrl_param)
@@ -119,14 +120,7 @@ if __name__ == "__main__":
 			de = uav_ros.dot_eta() - dot_eta_d
 			psi_d = ref[3]
 
-			if agent.observer == 'neso':
-				syst_dynamic = -uav_ros.kt / uav_ros.m * uav_ros.dot_eta() + uav_ros.A()
-				observe, _ = agent.obs.observe(x=uav_ros.eta(), syst_dynamic=syst_dynamic)
-			elif agent.observer == 'rd3':
-				syst_dynamic = -uav_ros.kt / uav_ros.m * uav_ros.dot_eta() + uav_ros.A()
-				observe, _ = agent.obs.observe(e=uav_ros.eta(), syst_dynamic=syst_dynamic)
-			else:
-				observe = np.zeros(3)
+			observe = agent.observe(uav_ros)
 
 			'''3. Update the parameters of FNTSMC if RL is used'''
 			if agent.controller == 'PX4-PID':
@@ -169,7 +163,7 @@ if __name__ == "__main__":
 
 			if data_record.index == data_record.N:
 				print('Data collection finish. Switching offboard position...')
-				data_record.package2file(path=os.getcwd() + '/src/fntsmc-ppo-ros/scripts/datasave/')
+				data_record.package2file(path=os.getcwd() + '/src/' + agent.pkg_name + '/scripts/datasave/')
 				agent.global_flag = 4
 		elif agent.global_flag == 4:  # finish, back to offboard position
 			agent.position_ctrl_with_PX4([0., 0., 0.5])
