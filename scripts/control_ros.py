@@ -285,9 +285,9 @@ if __name__ == "__main__":
 
 	'''load actor'''
 	opt_pos = PPOActor_Gaussian(state_dim=6, action_dim=8)
-	# optPathPos = os.getcwd() + '/src/adp-smc-uav-ros/nets/pos_new1-260/'  # 仿真最好的，实际最差的
-	optPathPos = os.getcwd() + '/src/adp-smc-uav-ros/nets/opt1/'  # 最好的
-	# optPathPos = os.getcwd() + '/src/adp-smc-uav-ros/nets/opt2/'      # 第二好的
+	# optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/pos_new1-260/'  # 仿真最好的，实际最差的
+	optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/opt1/'  # 最好的
+	# optPathPos = os.getcwd() + '/src/fntsmc-ppo-ros/nets/opt2/'      # 第二好的
 	opt_pos.load_state_dict(torch.load(optPathPos + 'actor'))
 	pos_norm = get_normalizer_from_file(6, optPathPos, 'state_norm.csv')
 	'''load actor'''
@@ -297,7 +297,7 @@ if __name__ == "__main__":
 	ref_bias_phase = np.array([np.pi / 2, 0, 0, 0])  # xd yd zd psid 相位偏移
 
 	''' 选择是否使用 Gazebo 仿真 '''
-	USE_GAZEBO = False			# 使用gazebo时，无人机质量和悬停油门可能会不同
+	USE_GAZEBO = True			# 使用gazebo时，无人机质量和悬停油门可能会不同
 	''' 选择是否使用 Gazebo 仿真 '''
 
 	''' 选择不同的控制器 '''
@@ -448,7 +448,7 @@ if __name__ == "__main__":
 
 			if data_record.index == data_record.N:
 				print('Data collection finish. Switching offboard position...')
-				data_record.package2file(path=os.getcwd() + '/src/adp-smc-uav-ros/scripts/datasave/')
+				data_record.package2file(path=os.getcwd() + '/src/fntsmc-ppo-ros/scripts/datasave/')
 				global_flag = 3
 		elif global_flag == 3:  # finish, back to offboard position
 			pose.pose.position.x = 0

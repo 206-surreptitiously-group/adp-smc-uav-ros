@@ -6,17 +6,19 @@ How to run this script.
 
    1.2. Run **make px4_sitl_default gazebo**
    
+   `If you have any bugs, just fix it. Everything would happen when you are compiling PX4.`
+   
 2. Start MAVROS, namely, the communication between ROS and the Control unit of the drone (PX4).
 
    2.1. Open another folder and source this ROS package.
 
-   2.2. Run **roslaunch adp-smc-uav-ros start.launch**
+   2.2. Run **roslaunch fntsmc-ppo-ros start.launch**
 
 3. Start control node.
 
    3.1 Open another folder and source this ROS package.
 
-   3.2. Run **rosrun adp-smc-uav-ros control_ros.py**
+   3.2. Run **rosrun fntsmc-ppo-ros control_ros.py**
 
 4. (Optional) Polt curve
 
